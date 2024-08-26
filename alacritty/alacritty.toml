@@ -1,0 +1,110 @@
+live_config_reload = true
+working_directory = "None"
+
+[bell]
+animation = "EaseOutExpo"
+color = "#3c3c3c"
+duration = 0
+
+[colors]
+draw_bold_text_with_bright_colors = false
+
+[colors.bright]
+black = "#595959"
+blue = "#5f63f0"
+cyan = "#99aaff"
+green = "#37a201"
+magenta = "#8f53b9"
+red = "#cf463f"
+white = "#c5c8e6"
+yellow = "#999900"
+
+[colors.normal]
+black = "#191919"
+blue = "#5f63f0"
+cyan = "#99aaff"
+green = "#37a201"
+magenta = "#8f53b9"
+red = "#cf463f"
+white = "#c5c8e6"
+yellow = "#999900"
+
+[colors.primary]
+background = "#000000"
+bright_foreground = "#49439d"
+dim_foreground = "#660066"
+foreground = "#cccccc"
+
+[colors.selection]
+background = "#191919"
+text = "#999900"
+
+[cursor]
+style = "Block"
+unfocused_hollow = true
+vi_mode_style = "Block"
+
+[debug]
+log_level = "Warn"
+persistent_logging = false
+print_events = false
+render_timer = false
+
+[env]
+TERM = "xterm-256color"
+
+[font]
+size = 16 #12 for roboto
+
+[font.normal]
+family = "Cozette Vector" #Cozette Vector #GohuFont uni11 Nerd Font #Roboto Mono Nerd Font
+style = "Medium"
+
+[font.bold]
+family = "Cozette Vector" #GohuFont uni11 Nerd Font
+style = "Bold"
+
+[font.italic]
+family = "Cozette Vector" #GohuFont uni11 Nerd Font
+style = "Medium"
+
+[font.bold_italic]
+family = "Cozette Vector" #GohuFont uni11 Nerd Font
+style = "Bold Italic"
+
+[font.glyph_offset]
+x = 0
+y = 0
+
+[font.offset]
+x = 0
+y = 0
+
+[mouse]
+hide_when_typing = true
+
+[[mouse.bindings]]
+action = "Copy"
+mouse = "Middle"
+
+[scrolling]
+history = 999
+multiplier = 1
+
+[selection]
+save_to_clipboard = false
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+[window]
+dynamic_padding = false
+dynamic_title = true
+opacity = 0.85
+title = "Terminal"
+
+[window.class]
+general = "Alacritty"
+instance = "Alacritty"
+
+[window.padding]
+x = 40
+y = 40

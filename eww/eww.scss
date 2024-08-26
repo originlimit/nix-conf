@@ -1,0 +1,67 @@
+$background: rgba(0, 0, 0, 0.85);
+
+* {
+  font-family: "Inter Medium", "Roboto Mono Nerd Font" ;
+  font-weight: normal;
+  font-size: 15px;
+  color: white;
+  background-color: transparent;
+}
+
+.bar-box {
+  background-color: $background;
+  padding: 0px 25px;
+}
+
+.nix, .ws, .clock, .vol, .ram, .cpu, .net, .bat {
+  font-family: "Roboto Mono Nerd Font";
+  font-size: 18px;
+}
+
+.nix {
+  color: #6963f0;
+  font-size: 25px;
+  padding: 0px 12px 0px 0px;
+}
+
+
+.wsbox, .ws {
+  padding: 0px 8px;
+}
+
+//.current {
+//  color: red;
+//}
+
+.empty {
+  padding: 0px 0px;
+  font-size: 0px;
+}
+
+.wn {
+  padding: 0px 0px 0px 12px;
+}
+
+.clock {
+  padding: 0px 9px 0px 0px;
+}
+
+.sep, .vol, .cpu, .ram, .net, .bat {
+  padding: 0px 0px 0px 20px;
+}
+
+.corners-left, .corners-right {
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: -15px -15px 0px 0px $background;
+}
+
+.corners-right {
+  box-shadow: 15px -15px 0px 0px $background;
+}
+
+.bar2-box {
+  background-color: $background;
+  padding: 0px 25px;
+  border-radius: 10px;
+}

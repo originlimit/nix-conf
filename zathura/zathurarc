@@ -1,0 +1,17 @@
+set recolor-keephue "true"
+set default-bg rgba(0,0,0,0.90)
+set statusbar-h-padding 0
+set statusbar-v-padding 0
+set page-padding 0.5
+set recolor "true"
+set recolor-lightcolor rgba(0,0,0,0)
+set recolor-darkcolor "#cccccc"
+map n recolor
+map K scroll up
+map J scroll down
+map k scroll half-up
+map j scroll half-down
+map i toggle_page_mode
+map p print
+map r reload
+map p print

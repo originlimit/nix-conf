@@ -1,0 +1,286 @@
+; Based on sudo-harun's beautiful eww bar: https://github.com/sudo-harun/dotfiles/tree/retroesque. If you're reading this, please go check it out and star his repo!
+; Ref: https://dharmx.is-a.dev/eww-powermenu/
+; Planned layouts:
+;   {logo, ws list, window name | time | vol, ram & cpu, wifi & battery}
+;   {logo, ws list, window name | nothing | vol, ram & cpu, wifi & battery, time}
+;   {logo, window name | ws list | vol, ram & cpu, wifi & battery, time}
+
+; TODO:
+;   - replicate how the wifi was done for the bat module
+;   - make the corners window a module
+;   - check ws scripts to modify, can use hyprctl props and that awk $
+
+; Status bar
+(defwindow bar
+  :monitor 1
+  :geometry (geometry
+    :x "0%"
+    :y "0"
+    :width "100%"
+    :height "40px"
+    :anchor "top center"
+  )
+  :stacking "fg"
+  :focusable false
+  :exclusive true
+  (bar1)
+)
+
+(defwidget bar1 []
+  (centerbox :class "bar-box" :orientation "h"
+    (left)
+    (middle)
+    (right)
+  )
+)
+
+(defwidget left []
+  (box
+    :class "left"
+    :orientation "h"
+    :space-evenly false
+    :halign "start"
+    (label
+      :class "nix"
+      :text "󱄅"
+    )
+    (ws)
+    (wn)
+  )
+)
+
+(defwidget middle []
+  (box
+    :class "middle"
+    :orientation "h"
+    :space-evenly false
+    :halign "middle"
+    (label
+      :class "clock"
+      :text "󰅐"
+    )
+    time
+  )
+)
+
+(defwidget right []
+  (box
+    :class "left"
+    :orientation "h"
+    :space-evenly false
+    :halign "end"
+    (vol)
+    (sep)
+    (cpu)
+    (ram)
+    (sep)
+    (network
+      :strength net
+      :offline "󰤮"
+      :excellent "󰤨"
+      :good "󰤥"
+      :mid "󰤢"
+      :slow "󰤟"
+    )
+    (bat)
+  )
+)
+
+; Workspaces
+(defwidget ws []
+  (box
+    :class "wsbox"
+    :space-evenly false
+    (for workspace in workspaces
+      (label
+        :class "ws ${current_workspace == workspace.id ? "current" : ""} ${workspace.windows > 0 ? "occupied" : "empty"}"
+        :text {
+          workspace.windows > 0 ? "󰝥" :
+          "󰝦"
+        }
+      )
+    )
+  )
+)
+
+(deflisten workspaces :initial "[]" "bash ~/.config/eww/scripts/get-workspaces")
+(deflisten current_workspace :initial "1" "bash ~/.config/eww/scripts/get-active-workspace")
+
+(defwidget wn []
+  (label
+    :class "wn"
+    :limit-width 30
+    :wrap true
+    :text "${window}"
+  )
+)
+
+(deflisten window :initial "..." "sh ~/.config/eww/scripts/get-window-title")
+
+; Clock
+(defpoll time :interval "5s" "date '+%I:%M %p'")
+
+; Separator
+(defwidget sep []
+  (label
+    :class "sep"
+    :text "|"
+  )
+)
+
+; Volume
+(defwidget vol []
+  (box
+    :halign "end"
+    (label
+      :class "vol"
+      :halign "end"
+      :text {
+        getVol >= 0.35 ? "󰕾" :
+        getVol >= 0.05 ? "󰖀" :
+        "󰖁"
+      }
+      :tooltip "Volume: ${getVol}%"
+    )
+  )
+)
+
+(defpoll getVol :interval "1s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}'")
+
+; CPU
+(defwidget cpu []
+  (box
+    :halign "end"
+    (label
+      :class "cpu"
+      :halign "end"
+      :text {
+        EWW_CPU.avg >= 90 ? "󰫈" :
+        EWW_CPU.avg >= 75 ? "󰫇" :
+        EWW_CPU.avg >= 60 ? "󰫆" :
+        EWW_CPU.avg >= 50 ? "󰫅" :
+        EWW_CPU.avg >= 25 ? "󰫄" :
+        EWW_CPU.avg >= 10 ? "󰫃" :
+        "󰋙"
+      }
+      :tooltip "CPU: ${round(EWW_CPU.avg, 1)}%"
+    )
+  )
+)
+
+; Ram
+(defwidget ram []
+  (box
+    :halign "end"
+    (label
+      :class "cpu"
+      :halign "end"
+      :text {
+        EWW_RAM.used_mem_perc >= 90 ? "󰪥" :
+        EWW_RAM.used_mem_perc >= 80 ? "󰪤" :
+        EWW_RAM.used_mem_perc >= 70 ? "󰪣" :
+        EWW_RAM.used_mem_perc >= 60 ? "󰪢" :
+        EWW_RAM.used_mem_perc >= 50 ? "󰪡" :
+        EWW_RAM.used_mem_perc >= 30 ? "󰪠" :
+        EWW_RAM.used_mem_perc >= 20 ? "󰪟" :
+        EWW_RAM.used_mem_perc >= 10 ? "󰪞" :
+        "󰝦"
+      }
+      :tooltip "RAM: ${round(EWW_RAM.used_mem_perc, 1)}%"
+    )
+  )
+)
+
+; Network
+(defwidget network [strength offline excellent good mid slow]
+  (box
+    :halign "end"
+    (label
+      :class "net"
+      :text {
+        strength == "" ? offline :
+        strength < 25 ? slow :
+        strength < 50 ? mid :
+        strength < 75 ? good : excellent
+      }
+    )
+  )
+)
+
+(defpoll net
+  :interval "5s"
+  :initial `N/A`
+  `nmcli -t -f SIGNAL,ACTIVE device wifi | awk -F':' '{if($2=="yes")print$1}'`
+)
+
+; Battery
+(defwidget bat []
+  (box
+    :halign "end"
+    (label
+      :class "bat"
+      :halign "end"
+      :text battery
+      :tooltip "Battery: ${battery-capacity}%"
+    )
+  )
+)
+
+(defpoll battery :interval "5s" "zsh scripts/battery.sh icon")
+(defpoll battery-capacity :interval "5s" "zsh scripts/battery.sh percent")
+
+(defwindow corners
+  :stacking "fg"
+  :monitor 1
+  :exclusive false
+  :namespace "corners"
+  :geometry
+  (geometry
+    :x "0px"
+    :y "0px"
+    :width "100%"
+    :height "40"
+    :anchor "top center"
+  )
+  (corners)
+)
+
+(defwidget corners []
+  (box
+    :class "corners-box"
+    (box
+      :class "corners-left"
+      :hexpand false
+      :halign "start"
+    )
+    (box
+      :class "corners-right"
+      :hexpand false
+      :halign "end"
+    )
+  )
+)
+
+(defwindow bar2
+  :monitor 0
+  :geometry (geometry
+    :x "0%"
+    :y "10"
+    :width "85%"
+    :height "40px"
+    :anchor "top center"
+  )
+  :stacking "fg"
+  :focusable false
+  :exclusive true
+  (bar2)
+)
+
+(defwidget bar2 []
+  (centerbox :class "bar2-box" :orientation "h"
+    (left)
+    (middle)
+    (right)
+  )
+)
+

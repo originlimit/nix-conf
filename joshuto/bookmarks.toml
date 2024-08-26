@@ -1,0 +1,8 @@
+bookmark = [
+  { key = "r", path = "/" },
+  { key = "e", path = "/etc" },
+  { key = "m", path = "/run/media/sotha/Black" },
+
+  { key = "h", path = "~/" },
+  { key = "t", path = "~/.transfer" }
+]
